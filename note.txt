@@ -1,0 +1,21 @@
+- install nestjs CLI: npm install -g @nestjs/cli
+
+- create nestjs project: nest new [Project Name]
+nestjs will create all folder/files for you
+
+- create a nestjs module: nest g module [Module Name]
+nestjs will create a module folder/files and auto import module for you
+
+- create a nestjs controller: nest g controller [Module Name] --no-spec
+nestjs will create a controller under given module, --no-spec parameter sepcify to not create unit test
+
+- create a nestjs service: nest g service [Module Name] --no-spec
+service can be set in a controller by a contructor, for instance:
+    constructor(private tasksService: TasksService){};
+
+- nestjs pipes for validation or processing dto: npm install class-validator class-transformer --save
+1. ValidationPipe: validate dto parameters
+2. ParseIntPipe: validate a number
+3. Custom Pipe: implement PipeTransform interface and override transform() method
+4. Pipes can be applied to parameter/controller/application level
+5. validation happens before passing to controller and send back to error messsage to client if not valid
