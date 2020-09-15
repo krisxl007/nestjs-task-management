@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Param, Delete, Query, Patch, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Query, Patch, UsePipes, ValidationPipe, ParseIntPipe } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { Task, TaskStatus } from './tasks.model';
 import { CreateTaskDTO } from './dto/create-task.dto';
 import { GetTaskFilterDTO } from './dto/get-task-filter.dto';
 import { UpdateTaskDTO } from './dto/update-task.dto';
+import { Task } from './task.entity';
 
 @Controller('tasks')
 export class TasksController {
@@ -14,16 +14,12 @@ export class TasksController {
      * @param filterDTO 
      */
     @Get()
-    public getTasks(@Query(ValidationPipe) filterDTO: GetTaskFilterDTO): Task[] {
-        if (Object.keys(filterDTO).length) {
-            return this.tasksService.getTasksByFilter(filterDTO);
-        } else {
-            return this.tasksService.getAllTasks();
-        }
+    public getTasks(@Query(ValidationPipe) filterDTO: GetTaskFilterDTO) {
+        return this.tasksService.getTasks(filterDTO);
     }
 
     @Get('/:id')
-    public getTaskById(@Param('id') id: string): Task {
+    public getTaskById(@Param('id', ParseIntPipe) id: number): Promise<Task> {
         return this.tasksService.getTaskById(id);
     }
 
@@ -33,20 +29,25 @@ export class TasksController {
      */
     @Post()
     @UsePipes(ValidationPipe)
-    public createTask(@Body() createTaskDTO: CreateTaskDTO): Task {
+    public createTask(@Body() createTaskDTO: CreateTaskDTO): Promise<Task> {
         return this.tasksService.createTask(createTaskDTO);
     }
 
+    /**
+     * Use ParseIntPipe in parameter level to validate input parameter
+     * @param id 
+     */
     @Delete('/:id')
-    public deleteTask(@Param('id') id: string): void {
-        this.tasksService.deleteTask(id);
+    public deleteTask(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        return this.tasksService.deleteTask(id);
     }
 
     @Patch('/:id')
-    public updateTaskStatus(@Param('id') id: string,
-        @Body() updateTaskStatus: UpdateTaskDTO): void {
-        if (Object.keys(updateTaskStatus).length) {
-            this.tasksService.updateTaskStatus(id, updateTaskStatus);
-        }
+    @UsePipes(ValidationPipe)
+    public updateTaskStatus(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() updateTaskStatus: UpdateTaskDTO
+    ): Promise<Task> {
+        return this.tasksService.updateTaskStatus(id, updateTaskStatus);
     }
 }

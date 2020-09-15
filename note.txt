@@ -19,3 +19,5 @@ service can be set in a controller by a contructor, for instance:
 3. Custom Pipe: implement PipeTransform interface and override transform() method
 4. Pipes can be applied to parameter/controller/application level
 5. validation happens before passing to controller and send back to error messsage to client if not valid
+
+- typeorm for database persistency: npm install @nestjs/typeorm typeorm pg
